@@ -1,7 +1,17 @@
 # hng_profile_project/settings.py
 
-import os
+
 from pathlib import Path
+from datetime import timedelta
+from environs import Env
+import os
+
+import sys
+import logging.config # For logging
+
+# Initialize Env for reading .env file
+env = Env()
+env.read_env() # Reads the .env file
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,18 +21,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9^sz$2^-8=ag36i@o4tch9=z6+3yc=ar5d-v-7q=v-u2s8e9mc'
+# Get SECRET_KEY from environment variable
+SECRET_KEY = env("SECRET_KEY", default='django-insecure-b*tuoe%^o+=^35$0fufrm=oamh^(o0tabn39(7ni12(i-oup+4') # Fallback for local, but ensure it's set in .env for production
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Get DEBUG from environment variable
+DEBUG = env.bool("DEBUG", default=True) # Default to True for local, set to False in .env for production
 
-ALLOWED_HOSTS = []
+
+# Site URL
+SITE_URL = env("SITE_URL", default="http://127.0.0.1:8000")
+
+DJANGO_SECRET_ADMIN_URL=env("DJANGO_SECRET_ADMIN_URL", default="admin/")
+
+# ALLOWED_HOSTS from environment variable, split by comma
+# For production, specify your Render URL and any other hostnames.
+# For local, '127.0.0.1' and 'localhost' are usually sufficient.
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost", "localhost:8000", "localhost:3001"])
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=['http://localhost:3000', 'http://localhost:8000'])
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 
 
-# Application definition
-# hng_profile_project/settings.py
-
-# ... other settings
 
 INSTALLED_APPS = [
     # Default Django Apps (Order can matter, keep admin near the top)

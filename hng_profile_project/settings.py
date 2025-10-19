@@ -42,6 +42,8 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost", "lo
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=['http://localhost:3000', 'http://localhost:8000'])
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 
 INSTALLED_APPS = [
@@ -56,6 +58,8 @@ INSTALLED_APPS = [
     # Third-party apps
     'rest_framework',
     'drf_yasg',  # Add this line for Swagger UI
+    'corsheaders',
+
     
     
     # Your local apps
@@ -66,7 +70,11 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this line
+    # Whitenoise Middleware - serves static files in production.
+    # Should be placed right after the security middleware.
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+   
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

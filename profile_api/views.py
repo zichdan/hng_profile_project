@@ -87,8 +87,24 @@ def get_profile(request):
         
         logger.info("Successfully assembled the response payload.")
         
-        # Return the final JSON response with a 200 OK status.
-        return Response(response_payload, status=status.HTTP_200_OK)
+        # ======================================================================
+        # MODIFICATION START: Add No-Cache Headers to Fix Dynamic Fact Issue
+        # ======================================================================
+
+        # Create the response object first
+        response = Response(response_payload, status=status.HTTP_200_OK)
+        
+        # Add headers to explicitly tell browsers and caches not to store this response.
+        # This forces a fresh API call every time, ensuring the cat fact is always dynamic.
+        response['Cache-Control'] = 'no-store, no-cache, must-revalidate, private'
+        response['Pragma'] = 'no-cache'  # For legacy HTTP/1.0 caches
+        response['Expires'] = '0'  # Ensures the response is considered expired immediately
+        
+        return response
+        
+        # ======================================================================
+        # MODIFICATION END
+        # ======================================================================
 
     except Exception as e:
         # This is a critical fallback. If an error occurs while assembling the
